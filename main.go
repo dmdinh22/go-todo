@@ -42,6 +42,7 @@ type (
 	todoModel struct {
 		gorm.Model        //generates a model struct for ID, CreatedAt, UpdatedAt, DeletedAt
 		Title      string `json:"title"`
+		Message    string `json:"message"`
 		Completed  int    `json:"completed"`
 	}
 
@@ -49,13 +50,14 @@ type (
 	transformedTodo struct {
 		ID        uint   `json:"id"`
 		Title     string `json:"title"`
+		Message   string `json:"message"`
 		Completed bool   `json:"completed`
 	}
 )
 
 func createTodo(c *gin.Context) {
 	completed, _ := strconv.Atoi(c.PostForm("completed"))
-	todo := todoModel{Title: c.PostForm("title"), Completed: completed}
+	todo := todoModel{Title: c.PostForm("title"), Message: c.PostForm("message"), Completed: completed}
 
 	db.Save(&todo)
 	c.JSON(http.StatusCreated, gin.H{
@@ -92,6 +94,7 @@ func getAllTodo(c *gin.Context) {
 		_todos = append(_todos, transformedTodo{
 			ID:        item.ID,
 			Title:     item.Title,
+			Message:   item.Message,
 			Completed: completed,
 		})
 
@@ -126,6 +129,7 @@ func getSingleTodo(c *gin.Context) {
 	_todo := transformedTodo{
 		ID:        todo.ID,
 		Title:     todo.Title,
+		Message:   todo.Message,
 		Completed: completed,
 	}
 
@@ -150,6 +154,7 @@ func updateTodo(c *gin.Context) {
 	}
 
 	db.Model(&todo).Update("title", c.PostForm("title"))
+	db.Model(&todo).Update("message", c.PostForm("message"))
 	completed, _ := strconv.Atoi(c.PostForm("completed"))
 	db.Model(&todo).Update("completed", completed)
 	c.JSON(http.StatusOK, gin.H{

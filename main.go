@@ -1,6 +1,9 @@
 package main
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -48,3 +51,11 @@ type (
 		Completed bool   `json:"completed`
 	}
 )
+
+func createTodo(c *gin.Context) {
+	completed, _ := strconv.Atoi(c.PostForm("completed"))
+	todo := todoModel{Title: c.PostForm("title"), Completed: completed}
+
+	db.Save(&todo)
+	c.JSON(http.StatusCreated, gin.H{"status": http.StatusCreated, "message": "Todo item successfully created.", "resourceId": todo.ID})
+}

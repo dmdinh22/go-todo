@@ -57,6 +57,13 @@ type (
 
 func createTodo(c *gin.Context) {
 	completed, _ := strconv.Atoi(c.PostForm("completed"))
+
+	if c.PostForm("completed") == "true" {
+		completed = 1
+	} else if c.PostForm("completed") == "false" {
+		completed = 0
+	}
+
 	todo := todoModel{Title: c.PostForm("title"), Message: c.PostForm("message"), Completed: completed}
 
 	db.Save(&todo)
@@ -94,12 +101,12 @@ func getAllTodo(c *gin.Context) {
 			Message:   item.Message,
 			Completed: completed,
 		})
-
-		c.JSON(http.StatusOK, gin.H{
-			"status": http.StatusOK,
-			"data":   _todos,
-		})
 	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": http.StatusOK,
+		"data":   _todos,
+	})
 }
 
 func getSingleTodo(c *gin.Context) {

@@ -33,3 +33,18 @@ func init() {
 	// migrate schema
 	db.AutoMigrate(&todoModel{})
 }
+
+type (
+	todoModel struct {
+		gorm.Model        //generates a model struct for ID, CreatedAt, UpdatedAt, DeletedAt
+		Title      string `json:"title"`
+		Completed  int    `json:"completed"`
+	}
+
+	// formatted todo
+	transformedTodo struct {
+		ID        uint   `json:"id"`
+		Title     string `json:"title"`
+		Completed bool   `json:"completed`
+	}
+)

@@ -19,7 +19,7 @@ func main() {
 		v1.POST("/", createTodo)
 		v1.GET("/", getAllTodo)
 		v1.GET("/:id", getSingleTodo)
-		v1.GET("/:id", updateTodo)
+		v1.PUT("/:id", updateTodo)
 		v1.DELETE("/:id", deleteTodo)
 	}
 

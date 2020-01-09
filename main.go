@@ -74,10 +74,7 @@ func getAllTodo(c *gin.Context) {
 	db.Find(&todos)
 
 	if len(todos) <= 0 {
-		c.JSON(http.StatusNotFound, gin.H{
-			"status":  http.StatusNotFound,
-			"message": "No todo found!",
-		})
+		c.JSON(http.StatusNotFound, noTodoFoundError)
 		return
 	}
 
@@ -146,10 +143,7 @@ func updateTodo(c *gin.Context) {
 	db.First(&todo, todoID)
 
 	if todo.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{
-			"status":  http.StatusNotFound,
-			"message": "No todo found!",
-		})
+		c.JSON(http.StatusNotFound, noTodoFoundError)
 		return
 	}
 
@@ -161,4 +155,27 @@ func updateTodo(c *gin.Context) {
 		"status":  http.StatusOK,
 		"message": "Todo updated successfully.",
 	})
+}
+
+func deleteTodo(c *gin.Context) {
+	var todo todoModel
+	todoID := c.Param("id")
+
+	db.First(&todo, todoID)
+
+	if todo.ID == 0 {
+		c.JSON(http.StatusNotFound, noTodoFoundError)
+		return
+	}
+
+	db.Delete(&todo)
+	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
+		"message": "Todo deleted successfully.",
+	})
+}
+
+var noTodoFoundError = gin.H{
+	"status":  http.StatusNotFound,
+	"message": "No todo found!",
 }

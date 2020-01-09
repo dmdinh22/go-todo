@@ -17,7 +17,8 @@ func main() {
 	v1 := router.Group("/api/v1/todos")
 	{
 		v1.POST("/", createTodo)
-		v1.GET("/", fetchAllTodo)
+		v1.GET("/", getAllTodo)
+		v1.GET("/:id", getSingleTodo)
 		v1.GET("/:id", updateTodo)
 		v1.DELETE("/:id", deleteTodo)
 	}
@@ -64,7 +65,7 @@ func createTodo(c *gin.Context) {
 	})
 }
 
-func fetchAllTodo(c *gin.Context) {
+func getAllTodo(c *gin.Context) {
 	var todos []todoModel
 	var _todos []transformedTodo
 
@@ -99,4 +100,37 @@ func fetchAllTodo(c *gin.Context) {
 			"data":   _todos,
 		})
 	}
+}
+
+func getSingleTodo(c *gin.Context) {
+	var todo todoModel
+	todoID := c.Param("id")
+
+	db.First(&todo, todoID)
+
+	if todo.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status":  http.StatusNotFound,
+			"message": "No todo found.",
+		})
+		return
+	}
+
+	completed := false
+	if todo.Completed == 1 {
+		completed = true
+	} else {
+		completed = false
+	}
+
+	_todo := transformedTodo{
+		ID:        todo.ID,
+		Title:     todo.Title,
+		Completed: completed,
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": http.StatusOK,
+		"data":   _todo,
+	})
 }
